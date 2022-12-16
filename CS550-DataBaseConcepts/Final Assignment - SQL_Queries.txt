@@ -1,0 +1,807 @@
+1.	SQL DDL statements to create all the tables in your database scheme. 
+
+CREATE TABLE Stock (
+	StockSymbol		VARCHAR(5) NOT NULL,
+	StockName		VARCHAR(20) NOT NULL,
+	StockType		VARCHAR(20),
+	SharePrice		FLOAT(2) NOT NULL,
+	NumAvailShares	INTEGER NOT NULL,
+	PRIMARY KEY 	(StockSymbol),
+	UNIQUE 		(StockName)
+);
+
+CREATE TABLE Employee (
+	SSN			CHAR(9) NOT NULL,
+	LastName		VARCHAR(20),
+	FirstName		VARCHAR(20),
+	Address		VARCHAR(50),
+	City			VARCHAR(20),
+	State			VARCHAR(20),
+	ZipCode		CHAR(5),
+	Telephone		CHAR(10),
+	StartDate		DATETIME,
+	HourlyRate		FLOAT(2),
+	EmpId			INTEGER AUTO_INCREMENT NOT NULL,
+Position_		VARCHAR(7) NOT NULL,
+PRIMARY KEY 	(EmpId),
+UNIQUE 		(SSN)
+);
+
+CREATE TABLE Customer (
+	LastName		VARCHAR(20) NOT NULL,
+	FirstName		VARCHAR(20) NOT NULL,
+	Address		VARCHAR(50),
+	City			VARCHAR(20),
+	State			VARCHAR(20),
+	ZipCode		CHAR(5),
+	Telephone		CHAR(10),
+	Email			VARCHAR(50),
+	Rating			INTEGER NOT NULL,
+	CusId			INTEGER AUTO_INCREMENT NOT NULL,
+	PRIMARY KEY (CusId)
+);
+
+CREATE TABLE Order (
+	OrderId			INTEGER AUTO_INCREMENT,
+	StockSymbol		VARCHAR(5),
+	OrderType		VARCHAR(4) NOT NULL,
+	NumShares		INTEGER NOT NULL,
+	CusAccNum		INTEGER DEFAULT 0,
+	Timestamp_		DATETIME DEFAULT NOW() NOT NULL,
+	PriceType		VARCHAR(15) NOT NULL,
+	StopPrice		FLOAT(2) DEFAULT 0,
+	StopDiff		FLOAT(2),
+	CurSharePrice	FLOAT(2),
+	EmpId			INTEGER DEFAULT 0,
+	Recorded		BOOLEAN DEFAULT 0,
+	Completed		BOOLEAN DEFAULT 0,
+	PRIMARY KEY 	(OrderId),
+	UNIQUE 		(StockSymbol, Timestamp, CusAccNum, EmpId),
+	FOREIGN KEY 	(StockSymbol) REFERENCES Stock (StockSymbol)
+		ON DELETE SET NULL
+		ON UPDATE CASCADE,	
+	FOREIGN KEY	 	(CusAccNum) REFERENCES Account (AccNum)
+		ON DELETE SET NULL	
+		ON UPDATE CASCADE,
+	FOREIGN KEY 	(EmpId) REFERENCES Employee (EmpId)
+		ON DELETE SET NULL
+		ON UPDATE CASCADE
+);
+
+CREATE TABLE Transact (
+	Id 			INTEGER AUTO_INCREMENT, 
+	OrderId		INTEGER,
+	TransFee 		FLOAT(2), 
+	TimeStamp_ 		DATETIME DEFAULT NOW() NOT NULL, 
+	PricePerShare 	FLOAT(2),
+	PRIMARY KEY 	(Id),
+	FOREIGN KEY 	(OrderId) REFERENCES Order (OrderId)
+		ON DELETE SET NULL
+		ON UPDATE CASCADE
+ );
+
+CREATE TABLE Login (
+	Usr			VARCHAR(20) NOT NULL,
+	Pwd			VARCHAR(20) NOT NULL,
+	AccType		INTEGER NOT NULL,
+	Id			INTEGER NOT NULL,
+	PRIMARY KEY 	(Usr)
+);
+
+CREATE TABLE Account (
+	AccNum		INTEGER AUTO_INCREMENT NOT NULL,
+	AccCreDate		DATETIME,
+	CreditCNum		VARCHAR(16) NOT NULL,
+	CusId			INTEGER NOT NULL,
+	PRIMARY KEY 	(AccNum),
+	FOREIGN KEY 	(CusId) REFERENCES Customer (CusId)
+		ON DELETE NO ACTION
+		ON UPDATE CASCADE
+);
+
+CREATE TABLE ConditionalPriceHistory (
+	OrderId		INTEGER,
+	CurSharePrice	FLOAT(2),
+	PriceType		VARCHAR(15) NOT NULL,
+	StopPrice		FLOAT(2),
+	Timestamp_		DATETIME DEFAULT NOW(),
+	PRIMARY KEY	(OrderId, PriceType, Timestamp_),
+	FOREIGN KEY		(OrderId) REFERENCES Order_ (OrderId)
+		ON DELETE CASCADE	
+		ON UPDATE CASCADE
+);
+
+CREATE TABLE StockPriceHistory (
+	StockSymbol		VARCHAR(5),
+	SharePrice		FLOAT(2),
+	Timestamp_		DATETIME DEFAULT NOW(),
+	PRIMARY KEY(StockSymbol, Timestamp_),
+	FOREIGN KEY(StockSymbol) REFERENCES Stock (StockSymbol)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
+CREATE TABLE Portfolio (
+	AccNum		INTEGER,
+	StockSymbol		CHAR(5),
+	NumShares		INTEGER,
+	Stop_			VARCHAR(8) NOT NULL,
+	StopPrice		FLOAT(2),
+	PRIMARY KEY 	(AccNum, StockSymbol),
+	FOREIGN KEY 	AccNum) REFERENCES Account_ (AccNum)
+		ON DELETE NO ACTION
+		ON UPDATE CASCADE,
+	FOREIGN KEY 	(StockSymbol) REFERENCES Stock (StockSymbol)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2. SQL DML statement to insert records into all the tables in your database. You are free to insert whatever you wish, but make sure each table has at least 10 records/rows.
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Reddy', 'Monalika', '456 Killam Avenue', 'Norfolk', 'VA', '23508', '7575742782', 'mpadm001@odu.edu', 1);
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Colby', 'Victor', '456 Peace Blvd', 'Stony Brook', 'NY', '11790', '5166324360', 'vcob@gmail.com', 1);
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Smith', 'Jennifer', '789 Fortune Road .', 'Las Vegas', 'CA', '93536', '8978674653', 'jsmith@gamil.com', 1);
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Mathew', 'Lewis', '135 Colley Lane', 'South Bend', 'IA', '12344', '9867573420', 'lmat001@gmail.edu', 1);
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Gilbert', 'Elena', '256 Brokyln Avenue', 'New York City', 'NY', 11508', '7522345678', 'elena@gmail.edu', 1);
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Jack', 'Miller', '256 Granby Street', 'Norfolk', 'VA', '23790', '5166312345', 'millerj@gmail.com', 1);
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Smith', 'Jennifer', '789 Fortune Road', 'Las Vegas', 'CA', '93536', '8978674653', 'jsmith@gamil.com', 1);
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Clark', 'Danny', '135 Colley Avenue', 'Norfolk', 'VA', '23790', '7575742678', 'dclarky@gmail.edu', 1);
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Doe', 'Jane', '789 Unlucky Road', 'San Jose', 'CA', '93536', '8978671233', 'jdoe@gamil.com', 1);
+
+INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+VALUES ('Choo', 'Jimmy', '135 Miller Avenue', 'Norfolk', 'VA', '23790', '7575741234', 'jchoo@gmail.edu', 1);
+
+----------------------------------------------------------------------------------------------------------------
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-01 00:00:00', '1234567812345678', 1);
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-02 00:00:00', '8784859069483827', 2);
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-02 00:00:00', '9876543212345678', 3);
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-01 00:00:00', '9876345678654356', 4);
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-02 00:00:00', '5678123456781234', 5);
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-02 00:00:00', '0987654312345677', 6);
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-01 00:00:00', '7890123456789012', 7);
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-02 00:00:00', '92345167890011223', 2);
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-02 00:00:00', '9876543323345555', 1);
+
+INSERT INTO Account_(AccCreDate, CreditCNum, CusId)
+VALUES ('2022-12-02 00:00:00', '678901234567890', 8);
+
+---------------------------------------------------------------------------------------------------------------------
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('GM', 'General Motors', 'automotive', 34.23, 1000);
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('IBM', 'IBM', 'computer', 91.43, 500);
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('T', 'Tesla', 'automotive', 9.0, 750);
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('CAT', 'Catbury', 'chocolate', 34.23, 1000);
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('AM', 'Amul', 'IceCream', 91.43, 500);
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('SNY', 'Sony', 'TV', 9.0, 750);
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('BC', 'BitCoin', 'Cryptocurrency', 34.23, 1000);
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('TCO', 'Tesco', 'computer', 91.43, 500);
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('OR', 'Oracle', 'DataBase', 9.0, 750);
+
+INSERT INTO Stock (StockSymbol, StockName, StockType, SharePrice, NumAvailShares)
+VALUES ('F', 'Ford', 'automotive', 9.0, 750);
+
+-----------------------------------------------------------------------------------------------------------------------
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (1, 'CAT', 250, 'None', NULL);
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (1, 'F', 100, 'None', NULL);
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (2, 'IBM', 50, 'None', NULL);
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (3, 'GM', 50, 'None', NULL);
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (4, 'AM', 250, 'None', NULL);
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (5, 'OR', 100, 'None', NULL);
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (6, 'TCO', 50, 'None', NULL);
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (7, 'I', 50, 'None', NULL);
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (8, 'CAT', 50, 'None', NULL);
+
+INSERT INTO Portfolio (AccNum, StockSymbol, NumShares, Stop_, StopPrice)
+VALUES (9, 'GM', 50, 'None', NULL);
+
+--------------------------------------------------------------------------------------------------------------------------
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('123456789', 'Smith', 'David', '123 Granby Road', 'Norfolk', 'VA', '23508', '9876543321', '2005-11-01 00:00:00', 60, 'CusRep');
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('789123456', 'Andrew', 'Archie', '456 Sunken Street', 'Norfolk', 'VA', '23508', '5678901234', '2006-02-02 00:00:00', 50, 'Manager');
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('098765443', 'Smith', 'Jaden', '123 Monarch Road', 'Norfolk', 'VA', '23508', '6789012345', '2007-11-01 00:00:00', 60, 'CusRep');
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('987654433', 'Warren', 'Will', '345 Colley Street', 'Norfolk', 'VA', '23508', '7890123456', '2008-02-02 00:00:00', 50, 'Manager');
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('098776554', 'Sparrow', 'Jack', '123 Killam Road', 'Norfolk', 'VA', '23508', '8901234567', '2009-11-01 00:00:00', 60, 'CusRep');
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('345678901', 'Geller', 'Ross', '678 Dowling Street', 'Norfolk', 'VA', '23508', '7890234567', '2010-02-02 00:00:00', 50, 'Manager');
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('789012345', 'Jack', 'Rose', '987 College Road', 'Norfolk', 'VA', '23508', '34567890123', '2015-11-01 00:00:00', 60, 'CusRep');
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('678901234', 'Chan', 'Jacky', '234 Druid Street', 'Norfolk', 'VA', '23508', '7890123455', '2016-02-02 00:00:00', 50, 'Manager');
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('890123456', 'Cook', 'Tim', '567 HighLand Road', 'Norfolk', 'VA', '23508', '7890222222', '2015-11-01 00:00:00', 60, 'CusRep');
+
+INSERT INTO Employee (SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+VALUES ('098761234', 'Harrison', 'Tom', '111 Larchmont Street', 'Norfolk', 'VA', '23508', '7654345678', '2022-02-02 00:00:00', 50, 'Manager');
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+INSERT INTO Order_ (StockSymbol, OrderType, NumShares, CusAccNum, Timestamp_, PriceType, StopPrice, EmpId, Recorded)
+VALUES ('F', 'Sell', 30, 1, NOW(), 'Market', NULL, 1, 0);
+
+INSERT INTO Order_ (StockSymbol, OrderType, NumShares, CusAccNum, Timestamp_, PriceType, StopPrice, EmpId, Recorded)
+VALUES ('CAT', 'Sell', 200, 1, NOW(), 'Trailing Stop', 5, 3, 0);
+
+INSERT INTO Order_ (StockSymbol, OrderType, NumShares, CusAccNum, Timestamp_, PriceType, StopPrice, EmpId, Recorded)
+VALUES ('GM', 'Buy', 200, 3, NOW(), 'Market', null, 5, 0);
+
+INSERT INTO Order_ (StockSymbol, OrderType, NumShares, CusAccNum, Timestamp_, PriceType, StopPrice, EmpId, Recorded)
+VALUES ('AM', 'Buy', 100, 4, NOW(), 'Market', null, 7, 0);
+
+INSERT INTO Order_ (StockSymbol, OrderType, NumShares, CusAccNum, Timestamp_, PriceType, StopPrice, EmpId, Recorded)
+VALUES ('OR', 'Sell', 25, 5, NOW(), 'Market', null, 9, 0);
+
+INSERT INTO Order_ (StockSymbol, OrderType, NumShares, CusAccNum, Timestamp_, PriceType, StopPrice, EmpId, Recorded)
+VALUES ('TCO', 'Buy', 100, 6, NOW(), 'Market', null, 1, 0);
+
+INSERT INTO Order_ (StockSymbol, OrderType, NumShares, CusAccNum, Timestamp_, PriceType, StopPrice, EmpId, Recorded)
+VALUES ('I', 'Sell', 25, 7, NOW(), 'Trailing Stop', 10, 1, 0);
+
+INSERT INTO Order_ (StockSymbol, OrderType, NumShares, CusAccNum, Timestamp_, PriceType, StopPrice, EmpId, Recorded)
+VALUES ('CAT', 'Sell', 25, 8, NOW(), 'Hidden Stop', 10, 1, 0);
+
+INSERT INTO Order_ (StockSymbol, OrderType, NumShares, CusAccNum, Timestamp_, PriceType, StopPrice, EmpId, Recorded)
+VALUES ('GM', 'Sell', 25, 9, NOW(), 'Trailing Stop', 10, 3, 0);
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3. SQL DML statements to support all the transactions listed above.
+
+------------------------------------------------------ MANAGER LEVEL TRANSACTIONS -----------------------------------------------------------------------
+
+delimiter |
+-- Sets the share price of a stock.
+CREATE PROCEDURE setSharePrice(IN stock_sym VARCHAR(5), IN share_price FLOAT(2))
+	BEGIN
+		UPDATE Stock
+		SET SharePrice = share_price
+		WHERE StockSymbol = stock_sym;
+    END
+| delimiter ;
+
+delimiter |
+-- Adds an employee to the database.
+CREATE PROCEDURE addEmployee(IN ssn CHAR(9), IN last_name VARCHAR(20),
+							 IN first_name VARCHAR(20), IN address VARCHAR(50),
+							 IN city VARCHAR(20), IN state VARCHAR(20),
+							 IN zipcode CHAR(5), IN telephone CHAR(10),
+							 IN start_date DATETIME, IN hourly_rate FLOAT(2),
+							 IN pos VARCHAR(7))
+	BEGIN
+		INSERT INTO Employee(SSN, LastName, FirstName, Address, City, State, ZipCode, Telephone, StartDate, HourlyRate, Position_)
+		VALUES (ssn, last_name, first_name, address, city, state, zipcode, telephone, start_date, hourly_rate, pos);
+    END
+| delimiter ;
+
+delimiter |
+-- Updates info for a given employee.
+-- Only does the char attributes < does not work, can't put field in set
+CREATE PROCEDURE updateEmployee(IN field CHAR(10), IN val CHAR(50), IN emp_id INT)
+	BEGIN
+		UPDATE Employee
+		SET field = val
+		WHERE EmpId = emp_id;
+    END
+| delimiter ;
+
+delimiter |
+-- Updates info for a given employee.
+-- Only does the Timestamp_ attribute.
+CREATE PROCEDURE updateEmployee2(IN val DATETIME, IN emp_id INT)
+	BEGIN
+		UPDATE Employee
+		SET StartDate = val
+		WHERE EmpId = emp_id;
+    END
+| delimiter ;
+
+delimiter |
+-- Updates info for a given employee.
+-- Only does the HourlyRate attribute.
+CREATE PROCEDURE updateEmployee3(IN val FLOAT(2), IN emp_id INT)
+	BEGIN
+		UPDATE Employee
+		SET HourlyRate = val
+		WHERE EmpId = emp_id;
+    END
+| delimiter ;
+
+delimiter |
+-- Deletes a given employee from the database.
+CREATE PROCEDURE deleteEmployee(IN emp_id INT)
+	BEGIN
+		DELETE FROM Employee
+        WHERE EmpId = emp_id;
+    END
+| delimiter ;
+
+delimiter |
+-- Gets a sales report for a particular month and year.
+CREATE PROCEDURE getSalesReport(IN yr INT, IN mon INT)
+	BEGIN
+		SELECT T.Transfee, T.OrderId
+		FROM Transact T
+		WHERE YEAR(T.Timestamp_) = yr
+		AND MONTH(T.Timestamp_) = mon;
+    END
+| delimiter ;
+
+delimiter |
+-- Produces a list of all stocks and how many orders are
+-- placed for each one.
+CREATE PROCEDURE listAllStocks()
+	BEGIN
+		SELECT S.*, COUNT(O.StockSymbol) AS OrdersPlaced
+		FROM Stock S, Order_ O
+		WHERE S.StockSymbol = O.StockSymbol
+		GROUP BY S.StockSymbol;
+	END
+| delimiter ;
+
+delimiter |
+-- Produces a list of all stocks and how many orders are
+-- placed for each one.
+CREATE PROCEDURE getNumOrders(IN stock_symbol VARCHAR(5))
+	BEGIN
+		SELECT COUNT(O.StockSymbol) AS OrdersPlaced
+		FROM Order_ O
+		WHERE stock_symbol = O.StockSymbol
+		GROUP BY O.StockSymbol;
+	END
+| delimiter ;
+
+delimiter |
+-- Creates a list of orders that are ordered by stock symbol
+-- or customer name.
+CREATE PROCEDURE listOrdersBy(IN field CHAR(5))
+	BEGIN
+		IF(field = 'order')
+        THEN SELECT *
+			FROM Order_ O
+			ORDER BY O.StockSymbol;
+		END IF;
+		IF(field = 'name')
+        THEN SELECT O.*, C.FirstName, C.LastName
+			FROM Order_ O, Customer C
+			WHERE O.CusAccNum = C.CusId
+			ORDER BY C.LastName, C.FirstName;
+		END IF;
+    END
+| delimiter ;
+
+delimiter |
+-- Shows the total revenue produced by each stock.
+CREATE PROCEDURE showStockRevenue()
+	BEGIN
+		SELECT S.StockSymbol, S.StockName, S.TotalRevenue
+		FROM StockRevenue S;
+    END
+| delimiter ;
+
+delimiter |
+-- Shows the total revenue produced by each stock type. 
+CREATE PROCEDURE showStockTypeRevenue()
+	BEGIN
+		SELECT S.StockType, S.TotalRevenue
+		FROM StockTypeRevenue S;
+    END
+| delimiter ;
+
+delimiter |
+-- Shows the total revenue produced by each customer.
+CREATE PROCEDURE showCustomerRevenue()
+	BEGIN
+		SELECT C.CusAccNum, C.FirstName, C.LastName, S.TotalRevenue
+		FROM CustomerRevenue C;
+    END
+| delimiter ;
+
+delimiter |
+-- Shows the customer rep that generated the most
+-- total revenue.
+CREATE PROCEDURE showMaxEmployeeRevenue()
+	BEGIN
+		SELECT E.EmpId, E.TotalRevenue
+		FROM EmployeeRevenue E
+		WHERE E.TotalRevenue =
+			(SELECT MAX(E.TotalRevenue)
+			FROM EmployeeRevenue E);
+    END
+| delimiter ;
+
+delimiter |
+-- Shows the customer that generated the most total
+-- revenue.
+CREATE PROCEDURE showMaxCustomerRevenue()
+	BEGIN
+		SELECT C.CusAccNum, C.TotalRevenue
+		FROM CustomerRevenue C
+		WHERE C.TotalRevenue =
+			(SELECT MAX(C.TotalRevenue)
+			FROM CustomerRevenue C);
+    END
+| delimiter ;
+
+delimiter |
+-- Shows a list of the top n most actively traded stocks.
+CREATE PROCEDURE showMostTradedStocks(IN n INT)
+	BEGIN
+		SELECT M.StockSymbol, M.StockName, M.NumOrders
+		FROM MostTraded M
+		ORDER BY NumOrders ASC
+		LIMIT n;
+    END
+| delimiter ;
+
+-- -------------------------------------------------------------CUSTOMER REPRESENTATIVE LEVEL TRANSACTIONS ---------------------------------------------
+delimiter |
+-- Records an order, meaning it is ready to be executed.
+CREATE PROCEDURE recordOrder(IN order_id INT)
+	BEGIN
+		UPDATE Order_ O
+		SET Recorded = 1
+		WHERE O.OrderId = order_id;
+    END
+| delimiter ;
+
+delimiter |
+-- Adds a customer to the database.
+CREATE PROCEDURE addCustomer(IN last_name VARCHAR(20), IN first_name VARCHAR(20),
+							 IN address VARCHAR(50), IN city VARCHAR(20),
+                             IN state VARCHAR(20), IN zipcode CHAR(5),
+                             IN telephone CHAR(10), IN email VARCHAR(50),
+							 IN rating INT)
+	BEGIN
+		INSERT INTO Customer(LastName, FirstName, Address, City, State, ZipCode, Telephone, Email, Rating)
+		VALUES (last_name, first_name, address, city, state, zipcode, telephone, email, rating);
+    END
+| delimiter ;
+
+-- Update customer in db - doesn't work, see update emp for reason
+delimiter |
+CREATE PROCEDURE updateCustomer(IN field VARCHAR(10), IN val VARCHAR(50), IN cus_id INT)
+	BEGIN
+		UPDATE Customer C
+		SET field = val
+		WHERE CusId = cus_id;
+    END
+| delimiter ;
+
+-- Delete a customer from db
+delimiter |
+CREATE PROCEDURE deleteCustomer(IN cus_id INT)
+	BEGIN
+		DELETE FROM Customer
+        WHERE CusId = cus_id;
+    END
+| delimiter ;
+-- Create the customer mailing list
+delimiter |
+CREATE PROCEDURE createCustomerMailingList()
+	BEGIN
+		SELECT CusId, LastName, FirstName, Email, Address, City, State, ZipCode
+		FROM Customer;
+    END
+| delimiter ;
+
+
+--------------------------------------------------------------------- CUSTOMER LEVEL TRANSACTIONS ---------------------------------------------------------
+-- Get customers current stock holdings
+delimiter |
+CREATE PROCEDURE getCustomerStockHoldings(IN customer_id INT)
+	BEGIN
+		SELECT P.AccNum, P.StockSymbol, P.NumShares, P.Stop, P.StopPrice
+		FROM Portfolio P, Account A, Customer C
+		WHERE P.AccNum = A.AccNum
+			AND A.CusId = C.CusId
+			AND C.CusId = customer_id;
+    END
+| delimiter ;
+
+-- The share-price and trailing-stop history for a given conditional order
+delimiter |
+CREATE PROCEDURE getConditonalOrderTrailingStop(IN orderid INT)
+	BEGIN
+		SELECT P.CurSharePrice, P.StopPrice, P.TimeStamp_
+		FROM CONDITIONALPRICEHISTORY P
+		WHERE P.OrderId = orderid  AND P.PriceType = 'Trailing Stop' AND P.StopPrice > 0;
+    END
+| delimiter ;
+
+-- The share-price and hidden-stop history for a given conditional order
+delimiter |
+CREATE PROCEDURE getConditonalOrderHiddenStop(IN orderid INT)
+	BEGIN
+		SELECT P.CurSharePrice, P.StopPrice, P.TimeStamp_
+		FROM CONDITIONALPRICEHISTORY P
+		WHERE P.OrderId = orderid  AND P.PriceType = 'Hidden Stop' AND P.StopPrice > 0;
+    END
+| delimiter ;
+
+-- The share-price and hidden-stop history for a given conditional order
+delimiter |
+CREATE PROCEDURE getConditonalOrderHistory(IN orderid INT)
+	BEGIN
+		SELECT P.CurSharePrice, P.StopPrice, P.TimeStamp_
+		FROM CONDITIONALPRICEHISTORY P
+		WHERE P.OrderId = orderid AND P.StopPrice > 0;
+    END
+| delimiter ;
+
+-- The share-price history of a given stock over a certain period of time (e.g., past six months)
+delimiter |
+CREATE PROCEDURE getSharePriceHistory(IN stock_symbol VARCHAR(5), IN start_date DATE, IN end_date DATE)
+	BEGIN
+		SELECT P.SharePrice, P.Timestamp_
+		FROM STOCKPRICEHISTORY P
+		WHERE P.StockSymbol = stock_symbol 
+		AND DATE(P.Timestamp_) BETWEEN start_date AND end_date;
+    END
+| delimiter ;
+
+-- A history of all current and past orders a customer has placed.
+delimiter |
+CREATE PROCEDURE getCustomerOrdersHistory(IN customer_id INT)
+	BEGIN
+		SELECT O.Timestamp_, O.CusAccNum, O.OrderType, O.StockSymbol, O.NumShares, O.CurSharePrice, 	O.PriceType
+		FROM Order_ O, Customer C, Account A
+		WHERE O.CusAccNum = A.AccNum
+		AND A.CusId = C.CusId AND C.CusId = customer_id;
+    END
+| delimiter ;
+
+-- Stocks available of a particular type 
+delimiter |
+CREATE PROCEDURE getStockUsingType(IN stock_type CHAR(20)) 
+	BEGIN
+		SELECT S.*
+		FROM STOCK S
+		WHERE S.StockType LIKE CONCAT('%', stock_type, '%');
+
+    END
+| delimiter ;
+
+-- Most-recent order info of a customer
+delimiter |
+CREATE PROCEDURE getMostRecentOrderInfo(IN cus_id INTEGER, IN stock_sym VARCHAR(5))
+	BEGIN
+		SELECT O.*
+		FROM ORDER_ O, CUSTOMER C, ACCOUNT_ A
+		WHERE O.CusAccNum = A.AccNum AND A.CusId = C.CusId 
+			AND C.CusId = cus_id AND O.StockSymbol = stock_sym
+			AND TIMESTAMPDIFF(MONTH, NOW(), O.Timestamp_) <= 3;
+
+    END
+| delimiter ;
+
+-- Stocks available with a particular keyword or set of keywords in the stock name
+delimiter |
+CREATE PROCEDURE getStockUsingKeyword(IN stock_keyword CHAR(20)) 
+	BEGIN
+		SELECT S.*
+		FROM STOCK S
+		WHERE S.StockName LIKE CONCAT('%', stock_keyword, '%');
+    END
+| delimiter ;
+
+-- Get the list of best selling stocks
+delimiter |
+CREATE PROCEDURE getBestSellers() 
+	BEGIN
+		SELECT B.StockSymbol, B.TotalShares
+		FROM BestSellers B
+		ORDER BY TotalShares desc 
+		LIMIT 25;
+    END
+| delimiter ;
+
+-- Get the list of best selling stocks in stock table format
+delimiter |
+CREATE PROCEDURE getBestSellers2() 
+	BEGIN
+		SELECT B.StockSymbol, B.StockName, B.StockType, B.SharePrice, B.NumAvailShares
+		FROM BestSellers2 B
+		ORDER BY TotalShares desc 
+		LIMIT 25;
+    END
+| delimiter ;
+
+-- Produce a list of stock suggestions for a given customer (based on that customer's past orders)
+delimiter |
+CREATE PROCEDURE Suggest(IN cus_id INT)
+	BEGIN
+		SELECT DISTINCT S.StockSymbol, S.StockName, S.StockType, S.SharePrice, S.NumAvailShares
+		FROM Stock S, Order_ O, Account_ A
+		WHERE (A.CusId = cus_id AND O.CusAccNum = A.AccNum AND O.StockSymbol = S.StockSymbol)
+        GROUP BY S.StockSymbol;
+	END
+| delimiter ;
+
+delimiter |
+
+-- Adds entry to CondPriceHist for a hidden stop when a stock price changes.
+-- Must call after updating stock price.
+CREATE Procedure UpdateHiddenStop(IN new_stock_price FLOAT(2), IN old_stock_price FLOAT(2), IN stock_symbol CHAR(5))
+	BEGIN
+		IF (new_stock_price <> old_stock_price)
+			THEN INSERT IGNORE INTO ConditionalPriceHistory(OrderId, PriceType, StopPrice, CurSharePrice, Timestamp_)
+				SELECT DISTINCT O.OrderId, O.PriceType, O.StopPrice, new_stock_price, NOW()
+				FROM Order_ O
+				WHERE stock_symbol = O.StockSymbol
+				AND O.PriceType IN ('Hidden Stop')
+				AND O.Completed = 0;
+		END IF;
+        IF (new_stock_price <> old_stock_price)
+			THEN SELECT DISTINCT O.OrderId, new_stock_price, O.StopPrice
+				FROM Order_ O
+				WHERE stock_symbol = O.StockSymbol
+				AND O.PriceType IN ('Hidden Stop')
+				AND O.Completed = 0;
+        END IF;
+    END;
+|
+delimiter ;
+
+delimiter |
+-- Adds entry to CondPriceHist for a trailing stop when a stock price changes.
+-- Updates the current stop price if the current share goes up.
+-- Must call after updating stock price.
+CREATE PROCEDURE UpdateTrailingStop(IN new_stock_price FLOAT(2), IN old_stock_price FLOAT(2), IN stock_symbol CHAR(5))
+	BEGIN
+		IF (new_stock_price > old_stock_price)
+        THEN INSERT IGNORE INTO ConditionalPriceHistory(OrderId, PriceType, StopPrice, CurSharePrice)
+			SELECT DISTINCT O.OrderId, O.PriceType, new_stock_price - O.StopDiff, new_stock_price
+			FROM Order_ O, ConditionalPriceHistory C
+			WHERE stock_symbol = O.StockSymbol
+            AND C.Timestamp_= (SELECT DISTINCT MAX(H.Timestamp_)
+							  FROM ConditionalPriceHistory H
+							  WHERE O.OrderId = H.OrderId)
+            AND O.PriceType = 'Trailing Stop'
+            AND O.StopDiff < new_stock_price - C.StopPrice
+            AND O.Completed = 0;
+        END IF;
+        IF (new_stock_price > old_stock_price)
+			THEN SELECT DISTINCT O.OrderId, new_stock_price, C.StopPrice
+			FROM Order_ O, ConditionalPriceHistory C
+			WHERE stock_symbol = O.StockSymbol
+            AND C.Timestamp_= (SELECT DISTINCT MAX(H.Timestamp_)
+							  FROM ConditionalPriceHistory H
+							  WHERE O.OrderId = H.OrderId)
+            AND O.PriceType = 'Trailing Stop'
+            AND O.StopDiff < new_stock_price - C.StopPrice
+            AND O.Completed = 0;
+        END IF;
+        IF (new_stock_price < old_stock_price)
+		THEN INSERT IGNORE INTO ConditionalPriceHistory(OrderId, PriceType, StopPrice, CurSharePrice, Timestamp_)
+			SELECT DISTINCT O.OrderId, O.PriceType, C.StopPrice, new_stock_price, NOW()
+            FROM Order_ O, ConditionalPriceHistory C
+            WHERE stock_symbol = O.StockSymbol
+            AND C.Timestamp_= (SELECT DISTINCT MAX(H.Timestamp_)
+							  FROM ConditionalPriceHistory H
+							  WHERE O.OrderId = H.OrderId)
+            AND O.PriceType IN ('Trailing Stop')
+            AND O.Completed = 0;
+		END IF;
+        IF (new_stock_price < old_stock_price)
+			THEN SELECT DISTINCT O.OrderId, new_stock_price, C.StopPrice
+            FROM Order_ O, ConditionalPriceHistory C
+            WHERE stock_symbol = O.StockSymbol
+            AND C.Timestamp_= (SELECT DISTINCT MAX(H.Timestamp_)
+							  FROM ConditionalPriceHistory H
+							  WHERE O.OrderId = H.OrderId)
+            AND O.PriceType IN ('Trailing Stop')
+            AND O.Completed = 0;
+        END IF;
+	END;
+|
+delimiter ;
+
+delimiter |
+
+CREATE PROCEDURE MarkComplete(IN order_id INT, IN cur_share_price FLOAT(2), IN stop_price FLOAT(2)) 
+	BEGIN
+		IF (cur_share_price <= stop_price
+			AND 1 = (SELECT O.Recorded
+					FROM ORDER_ O
+					WHERE order_id = O.OrderId)
+			AND (SELECT O.NumShares
+				 FROM Order_ O
+                 WHERE O.OrderId = order_id) <= 
+                 (SELECT P.NumShares
+                  FROM Portfolio P, Order_ O
+                  WHERE P.StockSymbol = O.StockSymbol
+                  AND O.OrderId = order_id
+                  AND O.CusAccNum = P.AccNum))
+            THEN UPDATE Order_ O
+			SET O.Completed = 1
+			WHERE O.OrderId = order_id;
+		END IF;
+	END;
+|
+delimiter ;
+
